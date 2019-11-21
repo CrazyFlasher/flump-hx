@@ -3,8 +3,8 @@
 
 package flump.demo;
 
-import flash.errors.Error;
-import flash.utils.ByteArray;
+import openfl.errors.Error;
+import openfl.utils.ByteArray;
 import flump.display.Library;
 import flump.display.LibraryLoader;
 import flump.display.Movie;
