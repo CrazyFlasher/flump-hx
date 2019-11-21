@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	
+	<meta title="FlumpHx" package="com.flumphx" version="1.0.0" company="Company Name" />
+	<app main="Main" path="Export" file="FlumpHx" />
+	
+	<source path="src" />
+	
+	<haxelib name="openfl" />
+	<haxelib name="starling" />
+	<haxelib name="as3hx" />
+	<haxelib name="hxsignal" />
+
+	<assets path="assets" rename="assets" />
+	
+</project>
