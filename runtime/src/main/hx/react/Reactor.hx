@@ -24,13 +24,13 @@ class Reactor
         return _listeners != null;
     }
 
-    private function addConnection(listener:Function):Cons
+    private function addConnection(listener:Function, argsCount:Int):Cons
     {
         if (listener == null)
         {
             throw new ArgumentError("Null listener");
         }
-        return addCons(new Cons(this, RListener.create(listener)));
+        return addCons(new Cons(this, RListener.create(listener, argsCount)));
     }
 
     private function removeConnection(listener:Function):Void
@@ -100,7 +100,7 @@ class Reactor
             {
                 throw error;
             }
-        } catch (e)
+        } catch (e:Dynamic)
         {
             // note that we're no longer dispatching
             _listeners = lners;

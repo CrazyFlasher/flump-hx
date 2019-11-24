@@ -43,7 +43,7 @@ class LibraryLoader
      * Library. If it fails, the Future's onFail will fire with the Error that caused the
      * loading failure.
      */
-    public static function loadBytes(bytes : ByteArray, executor : Executor = null,
+    public static function sLoadBytes(bytes : ByteArray, executor : Executor = null,
             scaleFactor : Float = -1, scaleTexturesToOrigin : Bool = true) : Future
     {
         return new LibraryLoader().setExecutor(executor).setScaleFactor(scaleFactor).setScaleTexturesToOrigin(scaleTexturesToOrigin).loadBytes(bytes);
@@ -72,7 +72,7 @@ class LibraryLoader
      * Library. If it fails, the Future's onFail will fire with the Error that caused the
      * loading failure.
      */
-    public static function loadURL(url : String, executor : Executor = null,
+    public static function sLoadURL(url : String, executor : Executor = null,
             scaleFactor : Float = -1, scaleTexturesToOrigin : Bool = false) : Future
     {
         return new LibraryLoader().setExecutor(executor).setScaleFactor(scaleFactor).setScaleTexturesToOrigin(scaleTexturesToOrigin).loadURL(url);
@@ -84,7 +84,7 @@ class LibraryLoader
      * Signal parameters:
      *  * event :flash.events.ProgressEvent
      */
-    public var urlLoadProgressed(default, never) : Signal = new Signal(ProgressEvent);
+    public var urlLoadProgressed(default, never) : Signal = new Signal();
     
     /**
      * Dispatched when a file is found in the Zip archive that is not recognized by Flump.
@@ -93,12 +93,12 @@ class LibraryLoader
      *  * name :String - the filename in the archive
      *  * bytes :ByteArray - the content of the file
      */
-    public var fileLoaded(default, never) : Signal = new Signal(Dynamic);
+    public var fileLoaded(default, never) : Signal = new Signal();
     
     /**
      * Dispatched when the library mold has been read from the archive.
      */
-    public var libraryMoldLoaded(default, never) : Signal = new Signal(LibraryMold);
+    public var libraryMoldLoaded(default, never) : Signal = new Signal();
     
     /**
      * Dispatched when the bytes for an ATF atlas have been read from the archive.
@@ -107,7 +107,7 @@ class LibraryLoader
      *  * name :String - the filename of the atlas
      *  * bytes :ByteArray - the content of the atlas
      */
-    public var atfAtlasLoaded(default, never) : Signal = new Signal(Dynamic);
+    public var atfAtlasLoaded(default, never) : Signal = new Signal();
     
     /**
      * Dispatched when a PNG atlas has been loaded and decoded from the archive. Changes made to
@@ -121,7 +121,7 @@ class LibraryLoader
      *  * atlas :AtlasMold - The loaded atlas.
      *  * image :LoadedBitmap - the decoded image.
      */
-    public var pngAtlasLoaded(default, never) : Signal = new Signal(Dynamic);
+    public var pngAtlasLoaded(default, never) : Signal = new Signal();
     
     /**
      * Sets the executor instance to use with this loader.
@@ -216,9 +216,13 @@ class LibraryLoader
      */
     public function loadBytes(bytes : ByteArray) : Future
     {
-        return (_executor || new Executor(1)).submit(
-                new Loader(bytes, this).load
-        );
+        var ex:Executor = _executor;
+        if (ex == null)
+        {
+            ex = new Executor(1);
+        }
+
+        return ex.submit(new Loader(bytes, this).load, 1);
     }
     
     /**
@@ -229,9 +233,13 @@ class LibraryLoader
      */
     public function loadURL(url : String) : Future
     {
-        return (_executor || new Executor(1)).submit(
-                new Loader(url, this).load
-        );
+        var ex:Executor = _executor;
+        if (ex == null)
+        {
+            ex = new Executor(1);
+        }
+
+        return ex.submit(new Loader(url, this).load, 1);
     }
     
     /** @private */

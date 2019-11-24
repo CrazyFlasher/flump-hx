@@ -139,51 +139,51 @@ class KeyframeMold
         return json;
     }
 
-    public function toXML():FastXML
+    /*public function toXML():Xml
     {
-        var xml:FastXML = FastXML.parse("<kf duration={duration}/>");
+        var xml:Xml = Xml.parse("<kf duration={duration}/>");
         if (ref != null)
         {
-            xml.setAttribute("ref", ref);
+            xml.set("ref", ref);
             if (x != 0 || y != 0)
             {
-                xml.setAttribute("loc", "" + round(x) + "," + round(y));
+                xml.set("loc", "" + round(x) + "," + round(y));
             }
             if (scaleX != 1 || scaleY != 1)
             {
-                xml.setAttribute("scale", "" + round(scaleX) + "," + round(scaleY));
+                xml.set("scale", "" + round(scaleX) + "," + round(scaleY));
             }
             if (skewX != 0 || skewY != 0)
             {
-                xml.setAttribute("skew", "" + round(skewX) + "," + round(skewY));
+                xml.set("skew", "" + round(skewX) + "," + round(skewY));
             }
             if (pivotX != 0 || pivotY != 0)
             {
-                xml.setAttribute("pivot", "" + round(pivotX) + "," + round(pivotY));
+                xml.set("pivot", "" + round(pivotX) + "," + round(pivotY));
             }
             if (alpha != 1)
             {
-                xml.setAttribute("alpha", round(alpha));
+                xml.set("alpha", round(alpha));
             }
             if (!visible)
             {
-                xml.setAttribute("visible", visible);
+                xml.set("visible", visible);
             }
             if (!tweened)
             {
-                xml.setAttribute("tweened", tweened);
+                xml.set("tweened", tweened);
             }
             if (ease != 0)
             {
-                xml.setAttribute("ease", round(ease));
+                xml.set("ease", round(ease));
             }
         }
         if (label != null)
         {
-            xml.setAttribute("label", label);
+            xml.set("label", label);
         }
         return xml;
-    }
+    }*/
 
     private static function extractFields(o:Dynamic, destObj:Dynamic, source:String,
                                           dest1:String, dest2:String):Void
@@ -209,7 +209,7 @@ class KeyframeMold
 
     private static function round(n:Float, places:Int = 4):Float
     {
-        var shift:Int = Math.pow(10, places);
+        var shift:Float = Math.pow(10, places);
         return Math.round(n * shift) / shift;
     }
 

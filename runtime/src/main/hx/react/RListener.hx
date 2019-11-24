@@ -9,13 +9,11 @@ import react.RListener;
 
 class RListener
 {
-    private var f(get, never) : Function;
+    public var f(get, never) : Function;
 
-    public static function create(f : Function) : RListener
+    public static function create(f : Function, argsCount:Int) : RListener
     {
-        var _sw0_ = (as3hx.Compat.getFunctionLength(f));        
-
-        switch (_sw0_)
+        switch (argsCount)
         {
             case 2:return new RListener2(f);
             case 1:return new RListener1(f);

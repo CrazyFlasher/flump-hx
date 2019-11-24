@@ -27,7 +27,7 @@ class AtlasMold
     {
         var mold:AtlasMold = new AtlasMold();
         mold.file = Require.require(o, "file");
-        for (tex in cast Require.require(o, "textures"))
+        for (tex in cast (Require.require(o, "textures"), Array<Dynamic>))
         {
             mold.textures.push(AtlasTextureMold.fromJSON(tex));
         }

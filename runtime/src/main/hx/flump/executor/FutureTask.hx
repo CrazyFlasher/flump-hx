@@ -21,8 +21,7 @@ class FutureTask extends Future
     public function succeed(result : Array<Dynamic> = null) : Void
     // Sigh, where's your explode operator, ActionScript?
     {
-        
-        if (result.length == 0)
+        if (result == null || result.length == 0)
         {
             super.onSuccess();
         }
@@ -82,14 +81,14 @@ class FutureTask extends Future
         catch (e : Error)
         {
             if (this.isComplete)
-            
+            {
             // can't fail if we're already completed{
                 
                 throw e;
             }
             else
             {
-                Assert.fail(e);
+                fail(e);
             }
         }
     }

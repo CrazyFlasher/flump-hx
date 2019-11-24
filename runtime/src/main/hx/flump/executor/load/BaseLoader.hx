@@ -56,7 +56,9 @@ class BaseLoader
         // to avoid 'SecurityError: Error #3015' when loading swfs with executable code
         try
         {
-            cast((context), Object)["allowLoadBytesCodeExecution"] = true;
+            #if air
+            context.allowLoadBytesCodeExecution = true;
+            #end
         }
         catch (e:Error)
         {
@@ -69,16 +71,16 @@ class BaseLoader
         {
             context.applicationDomain = ApplicationDomain.currentDomain;
         }
-        return exec.submit(function(onSuccess:Function, onFail:Function):Void
+        return exec.submit(function(onSuccess:Function, onFail:IOErrorEvent -> Void):Void
         {
             var loader:Loader = new Loader();
-            loader.contentLoaderInfo.addEventListener(Event.INIT, function(_:Array<Dynamic> = null):Void
+            loader.contentLoaderInfo.addEventListener(Event.COMPLETE, e ->
             {
                 handleSuccess(onSuccess, loader);
             });
             loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onFail);
             loadExecer(loader, context);
-        });
+        }, 2);
     }
 
     // default to loading symbols into a subdomain

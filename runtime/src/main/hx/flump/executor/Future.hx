@@ -33,25 +33,45 @@ class Future
     /** Dispatches the result if the future completes successfully. */
     private function get_succeeded() : SignalView
     {
-        return _onSuccess || (_onSuccess = new Signal(Dynamic));
+        if (_onSuccess == null)
+        {
+            _onSuccess = new Signal();
+        }
+
+        return _onSuccess;
     }
     
     /** Dispatches the result if the future fails. */
     private function get_failed() : SignalView
     {
-        return _onFailure || (_onFailure = new Signal(Dynamic));
+        if (_onFailure == null)
+        {
+            _onFailure = new Signal();
+        }
+
+        return _onFailure;
     }
     
     /** Dispatches if the future is cancelled. */
     private function get_cancelled() : SignalView
     {
-        return _onCancel || (_onCancel = new UnitSignal());
+        if (_onCancel == null)
+        {
+            _onCancel = new UnitSignal();
+        }
+
+        return _onCancel;
     }
     
     /** Dispatches the Future when it succeeds, fails, or is cancelled. */
     private function get_completed() : SignalView
     {
-        return _onCompletion || (_onCompletion = new Signal(Future));
+        if (_onCompletion == null)
+        {
+            _onCompletion = new Signal();
+        }
+
+        return _onCompletion;
     }
     
     /** Returns true if the Future completed successfully. */
@@ -96,7 +116,7 @@ class Future
             _result = result[0];
         }
         _state = STATE_SUCCEEDED;
-        if (_onSuccess)
+        if (_onSuccess != null)
         {
             _onSuccess.emit(_result);
         }
@@ -112,7 +132,7 @@ class Future
         }
         _result = error;
         _state = STATE_FAILED;
-        if (_onFailure)
+        if (_onFailure != null)
         {
             _onFailure.emit(error);
         }
@@ -123,7 +143,7 @@ class Future
     private function onCancel() : Void
     {
         _state = STATE_CANCELLED;
-        if (_onCancel)
+        if (_onCancel != null)
         {
             _onCancel.emit();
         }
@@ -133,7 +153,7 @@ class Future
     
     private function dispatchCompletion() : Void
     {
-        if (_onCompletion)
+        if (_onCompletion != null)
         {
             _onCompletion.emit(this);
         }

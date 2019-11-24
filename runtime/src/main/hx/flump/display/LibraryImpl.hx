@@ -14,8 +14,8 @@ class LibraryImpl implements Library
     public var baseTextures(get, never):Array<Texture>;
     public var baseScale(get, never):Float;
 
-    @:allow(flump.display)
-    private function new(baseTextures:Array<Texture>, creators:Dictionary,
+//    @:allow(flump.display)
+    public function new(baseTextures:Array<Texture>, creators:Dictionary<String, SymbolCreator>,
                          isNamespaced:Bool, baseScale:Float = 1)
     {
         _baseTextures = baseTextures;
@@ -133,7 +133,7 @@ class LibraryImpl implements Library
         }
     }
 
-    private var _creators:Dictionary;
+    private var _creators:Dictionary<String, SymbolCreator>;
     private var _baseTextures:Array<Texture>;
     private var _isNamespaced:Bool;
     private var _baseScale:Float;

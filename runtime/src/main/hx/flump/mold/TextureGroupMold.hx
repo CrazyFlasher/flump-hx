@@ -12,8 +12,8 @@ class TextureGroupMold
     public static function fromJSON(o : Dynamic) : TextureGroupMold
     {
         var mold : TextureGroupMold = new TextureGroupMold();
-        mold.scaleFactor = require(o, "scaleFactor");
-        for (atlas/* AS3HX WARNING could not determine type for var: atlas exp: ECall(EIdent(require),[EIdent(o),EConst(CString(atlases))]) type: null */ in require(o, "atlases"))
+        mold.scaleFactor = Require.require(o, "scaleFactor");
+        for (atlas in cast (Require.require(o, "atlases"), Array<Dynamic>))
         {
             mold.atlases.push(AtlasMold.fromJSON(atlas));
         }
@@ -26,16 +26,6 @@ class TextureGroupMold
             scaleFactor : scaleFactor,
             atlases : atlases
         };
-    }
-    
-    public function toXML() : FastXML
-    {
-        var xml : FastXML = FastXML.parse("<textureGroup scaleFactor={scaleFactor}/>");
-        for (atlas in atlases)
-        {
-            xml.node.appendChild.innerData(atlas.toXML());
-        }
-        return xml;
     }
 
     public function new()

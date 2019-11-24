@@ -3,6 +3,7 @@
 
 package flump.mold;
 
+import flump.mold.Require;
 import flump.display.Movie;
 
 class MovieMold
@@ -18,9 +19,9 @@ class MovieMold
     public static function fromJSON(o : Dynamic) : MovieMold
     {
         var mold : MovieMold = new MovieMold();
-        mold.id = require(o, "id");
+        mold.id = Require.require(o, "id");
         mold.baseScale = (Reflect.field(o, "baseScale") != null) ? Reflect.field(o, "baseScale") : 1;
-        for (layer/* AS3HX WARNING could not determine type for var: layer exp: ECall(EIdent(require),[EIdent(o),EConst(CString(layers))]) type: null */ in require(o, "layers"))
+        for (layer in cast (Require.require(o, "layers"), Array<Dynamic>))
         {
             Reflect.setField(layer, "baseScale", mold.baseScale);
             mold.layers.push(LayerMold.fromJSON(layer));
@@ -33,8 +34,9 @@ class MovieMold
         var frames : Int = 0;
         for (layer in layers)
         {
-            frames = Math.max(frames, layer.frames);
+            frames = Std.int(Math.max(frames, layer.frames));
         }
+
         return frames;
     }
     
@@ -53,7 +55,7 @@ class MovieMold
         labels[0] = [];
         labels[0].push(Movie.FIRST_FRAME);
         if (labels.length > 1)
-        
+        {
         // If we only have 1 frame, don't overwrite labels[0]{
             
             labels[frames - 1] = [];
@@ -102,15 +104,15 @@ class MovieMold
         return json;
     }
     
-    public function toXML() : FastXML
+    /*public function toXML() : Xml
     {
-        var xml : FastXML = FastXML.parse("<movie name={id}/>");
+        var xml : Xml = Xml.parse("<movie name={id}/>");
         for (layer in layers)
         {
             xml.node.appendChild.innerData(layer.toXML());
         }
         return xml;
-    }
+    }*/
 
     public function new()
     {

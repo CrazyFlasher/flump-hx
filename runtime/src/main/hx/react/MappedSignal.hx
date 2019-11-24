@@ -73,7 +73,7 @@ class MappedSignalImpl extends MappedSignal
     
     override private function connectToSource() : Connection
     {
-        return _source.connect(onSourceEmit);
+        return _source.connect(onSourceEmit, 1);
     }
     
     private function onSourceEmit(value : Dynamic) : Void

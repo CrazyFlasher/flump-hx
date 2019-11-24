@@ -29,12 +29,16 @@ class LibraryMold
     {
         var mold:LibraryMold = new LibraryMold();
         mold.baseScale = (Reflect.field(o, "baseScale") != null) ? Reflect.field(o, "baseScale") : 1;
-        mold.frameRate = require(o, "frameRate");
-        mold.md5 = require(o, "md5");
-        mold.textureFormat = Reflect.field(o, "textureFormat") || "png";
+        mold.frameRate = Require.require(o, "frameRate");
+        mold.md5 = Require.require(o, "md5");
+
+        var textureFormat:String = Reflect.field(o, "textureFormat");
+        if (textureFormat == null) textureFormat = "png";
+
+        mold.textureFormat = textureFormat;
         mold.isNamespaced = Reflect.field(o, "isNamespaced") == true; // default false
 
-        for (movie/* AS3HX WARNING could not determine type for var: movie exp: ECall(EIdent(require),[EIdent(o),EConst(CString(movies))]) type: null */ in require(o, "movies"))
+        for (movie in cast(Require.require(o, "movies"), Array<Dynamic>))
         {
             if (scaleTexturesToOrigin)
             {
@@ -43,7 +47,7 @@ class LibraryMold
             mold.movies.push(MovieMold.fromJSON(movie));
         }
 
-        for (tg/* AS3HX WARNING could not determine type for var: tg exp: ECall(EIdent(require),[EIdent(o),EConst(CString(textureGroups))]) type: null */ in require(o, "textureGroups"))
+        for (tg in cast (Require.require(o, "textureGroups"), Array<Dynamic>))
         {
             mold.textureGroups.push(TextureGroupMold.fromJSON(tg));
         }

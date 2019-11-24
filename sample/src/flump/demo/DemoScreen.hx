@@ -3,6 +3,7 @@
 
 package flump.demo;
 
+import openfl.Assets;
 import openfl.errors.Error;
 import openfl.utils.ByteArray;
 import flump.display.Library;
@@ -17,12 +18,12 @@ class DemoScreen extends Sprite
     public function new()
     {
         super();
-        var loader:Future = new LibraryLoader().loadBytes(cast((new MASCOTZIP()), ByteArray));
-        loader.succeeded.connect(onLibraryLoaded);
+        var loader:Future = new LibraryLoader().loadBytes(Assets.getBytes("assets/mascot.zip"));
+        loader.succeeded.connect(onLibraryLoaded, 1);
         loader.failed.connect(function(e:Error):Void
         {
             throw e;
-        });
+        }, 1);
     }
 
     private function onLibraryLoaded(library:Library):Void

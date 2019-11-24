@@ -4,6 +4,7 @@
 package flump.mold;
 
 
+import flump.mold.Require;
 class LayerMold
 {
     public var frames(get, never):Int;
@@ -16,9 +17,9 @@ class LayerMold
     public static function fromJSON(o:Dynamic):LayerMold
     {
         var mold:LayerMold = new LayerMold();
-        mold.name = require(o, "name");
+        mold.name = Require.require(o, "name");
         mold.baseScale = (Reflect.field(o, "baseScale") != null) ? Reflect.field(o, "baseScale") : 1;
-        for (kf in cast Require.require(o, "keyframes"))
+        for (kf in cast (Require.require(o, "keyframes"), Array<Dynamic>))
         {
             Reflect.setField(kf, "baseScale", mold.baseScale);
             mold.keyframes.push(KeyframeMold.fromJSON(kf));

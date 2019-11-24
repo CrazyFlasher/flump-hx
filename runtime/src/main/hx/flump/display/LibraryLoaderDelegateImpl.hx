@@ -25,8 +25,8 @@ class LibraryLoaderDelegateImpl implements LibraryLoaderDelegate
             _bitmapLoader = new BitmapLoader();
         }
         var f : Future = _bitmapLoader.loadFromBytes(bytes);
-        f.succeeded.connect(onSuccess);
-        f.failed.connect(onError);
+        f.succeeded.connect(onSuccess, 1);
+        f.failed.connect(onError, 1);
     }
     
     public function createTextureFromBitmap(atlas : AtlasMold, bitmapData : BitmapData,

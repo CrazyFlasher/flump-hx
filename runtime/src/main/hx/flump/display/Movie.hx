@@ -64,7 +64,7 @@ class Movie extends Sprite implements IAnimatable
             while (ii < _layers.length)
             {
                 _layers[ii] = createLayer(this, src.layers[ii], library, /*flipbook=*/false);
-                _numFrames = Math.max(src.layers[ii].frames, _numFrames);
+                _numFrames = Std.int(Math.max(src.layers[ii].frames, _numFrames));
                 ii++;
             }
         }
@@ -274,7 +274,7 @@ class Movie extends Sprite implements IAnimatable
             }
         }
 
-        var addReplacementDisplayObject:Bool;
+        var addReplacementDisplayObject:Bool = false;
         if (childLayerIdx >= 0)
         {
             // Child is no longer managed by this Movie{
@@ -290,7 +290,7 @@ class Movie extends Sprite implements IAnimatable
                 // We're removing the only DisplayObject on the layer, which means we can{
 
                 // remove the entire layer.
-                _layers.removeAt(childLayerIdx);
+                _layers.remove(_layers[childLayerIdx]);
             }
                 // The Layer has other DisplayObjects; we need to swap in a replacement
             else

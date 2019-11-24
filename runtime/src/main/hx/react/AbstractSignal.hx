@@ -22,9 +22,9 @@ class AbstractSignal extends Reactor implements SignalView
         return new FilteredSignal(this, pred);
     }
     
-    public function connect(slot : Function) : Connection
+    public function connect(slot : Function, argsCount:Int) : Connection
     {
-        return addConnection(slot);
+        return addConnection(slot, argsCount);
     }
     
     public function disconnect(slot : Function) : Void

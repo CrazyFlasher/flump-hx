@@ -14,7 +14,7 @@ class Signal extends AbstractSignal
      * Constructs a new Signal.
      * The eventType parameter exists purely for documentation purposes.
      */
-    public function new(eventType : Class<Dynamic>)
+    public function new()
     {
         super();
         // no-op

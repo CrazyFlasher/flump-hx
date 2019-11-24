@@ -22,16 +22,16 @@ class Executor
     public var isTerminated(get, never) : Bool;
 
     /** Dispatched when the all jobs have been completed in a shutdown executor. */
-    public var terminated(default, never) : Signal = new Signal(Executor);
+    public var terminated(default, never) : Signal = new Signal();
     
     /** Dispatched every time a submitted job succeeds. */
-    public var succeeded(default, never) : Signal = new Signal(Future);
+    public var succeeded(default, never) : Signal = new Signal();
     
     /** Dispatched every time a submitted job fails. */
-    public var failed(default, never) : Signal = new Signal(Future);
+    public var failed(default, never) : Signal = new Signal();
     
     /** Dispatched every time a submitted job completes, whether it succeeds or fails. */
-    public var completed(default, never) : Signal = new Signal(Future);
+    public var completed(default, never) : Signal = new Signal();
     
     /**
      * Creates an executor for running tasks.
@@ -70,7 +70,7 @@ class Executor
         var result : Array<Future> = new Array<Future>();
         for (f in fs)
         {
-            result.push(submit(f));
+            result.push(submit(f, 0));
         }
         return result;
     }
@@ -93,14 +93,14 @@ class Executor
      * <p>If maxSimultaneous functions are running in the Executor, additional submissions are started
      * in the order of submission as running functions complete.</p>
      */
-    public function submit(f : Function) : Future
+    public function submit(f : Function, argsCount:Int) : Future
     {
         if (_shutdown)
         {
             throw new Error("Submission to a shutdown executor!");
         }
         var future : FutureTask = new FutureTask(onCompleted);
-        _toRun.push(new ToRun(future, f));
+        _toRun.push(new ToRun(future, f, argsCount));
         // Don't run immediately; let listeners hook onto the future
         _timer.start();
         return future;
@@ -161,7 +161,7 @@ class Executor
         {
             if (_running[ii] == f)
             {
-                _running.removeAt(ii--);
+                _running.remove(_running[ii]);
                 removed = true;
             }
             ii++;
@@ -190,7 +190,7 @@ class Executor
             _running.push(willRun.future);  // Fill in running first so onCompleted can remove it  
             try
             {
-                if (willRun.f.length == 1)
+                if (willRun.argsCount == 1)
                 {
                     willRun.f(willRun.future);
                 }
@@ -249,10 +249,12 @@ class ToRun
 {
     public var future : FutureTask;
     public var f : Function;
-    
-    public function new(future : FutureTask, f : Function)
+    public var argsCount : Int;
+
+    public function new(future : FutureTask, f : Function, argsCount:Int)
     {
         this.future = future;
         this.f = f;
+        this.argsCount = argsCount;
     }
 }

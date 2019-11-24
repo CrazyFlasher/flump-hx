@@ -35,7 +35,7 @@ interface SignalView
      *
      * @return a connection instance which can be used to cancel the connection.
      */
-    function connect(slot : Function) : Connection
+    function connect(slot : Function, argsCount:Int) : Connection
     ;
     
     /**

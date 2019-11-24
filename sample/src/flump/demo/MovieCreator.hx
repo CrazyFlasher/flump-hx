@@ -23,7 +23,7 @@ class MovieCreator
     public function new(library : Library, juggler : Juggler = null)
     {
         _library = library;
-        _juggler = (juggler || Starling.juggler);
+        _juggler = (juggler != null ? juggler : Starling.current.juggler);
     }
     
     /**
