@@ -1,0 +1,19 @@
+{
+  "name": "flump-starling",
+  "url": "https://github.com/CrazyFlasher/flump-hx",
+  "license": "MIT",
+  "tags": [
+  ],
+  "description": "Ported version of Flump",
+  "version": "1.0.0",
+  "releasenote": "Initial",
+  "contributors": [
+    "CrazyFlasher"
+  ],
+  "classPath": "src",
+  "dependencies": {
+    "openfl": "8.9.5",
+    "starling": "2.5.1",
+    "actuate": ""
+  }
+}
