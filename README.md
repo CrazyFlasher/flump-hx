@@ -2,4 +2,4 @@
 
 Ported to Haxe version of [Flump](https://github.com/tconkling/flump)
 
-Dependencies: **OpenFl**, **Starling**
+Dependencies: **OpenFL**, **Starling**
