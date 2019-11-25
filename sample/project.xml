@@ -5,7 +5,7 @@
 	<app main="flump.demo.Demo" path="Export" file="FlumpHx" />
 	
 	<source path="src" />
-	<source path="../runtime/src/main/hx" />
+	<source path="../runtime/src" />
 
 	<window hardware="true"/>
 	<window if="html5" fps="0" background="0" color-depth="16"/>
