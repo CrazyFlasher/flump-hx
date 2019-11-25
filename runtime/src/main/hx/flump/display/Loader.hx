@@ -1,8 +1,8 @@
 package flump.display;
 
-import flump.display.LibraryLoaderDelegateImpl.LibraryLoaderDelegateEvent;
-import flump.display.LibraryLoaderDelegateImpl.LibraryLoaderDelegateEvent;
-import flump.display.LibraryLoaderDelegateImpl.LibraryLoaderDelegateEvent;
+import flump.display.LibraryLoaderDelegate.LibraryLoaderDelegateEvent;
+import flump.display.LibraryLoaderDelegate.LibraryLoaderDelegateEvent;
+import flump.display.LibraryLoaderDelegate.LibraryLoaderDelegateEvent;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.display.BitmapData;
@@ -36,7 +36,7 @@ class Loader extends EventDispatcher
     private var _generateMipMaps:Bool;
     private var _lib:LibraryMold;
     private var _versionChecked:Bool;
-    private var _delegate:LibraryLoaderDelegateImpl = new LibraryLoaderDelegateImpl();
+    private var _delegate:LibraryLoaderDelegate = new LibraryLoaderDelegate();
     private var _library:LibraryImpl;
 
     private var atlas:AtlasMold;
