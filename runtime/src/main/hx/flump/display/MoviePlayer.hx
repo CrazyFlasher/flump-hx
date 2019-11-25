@@ -52,19 +52,21 @@ class MoviePlayer implements IAnimatable
 
     private function onAdded(e:Event):Void
     {
-        addMovies(try cast(e.target, DisplayObject) catch (e:Dynamic) null);
+        addMovies(cast (e.target, DisplayObject));
     }
 
     private function onRemoved(e:Event):Void
     {
-        removeMovies(try cast(e.target, DisplayObject) catch (e:Dynamic) null);
+        removeMovies(cast (e.target, DisplayObject));
     }
 
     private function addMovies(disp:DisplayObject):Void
     {
-        var movie:Movie = try cast(disp, Movie) catch (e:Dynamic) null;
-        if (movie != null)
+        var movie:Movie;
+        if (Std.is(disp, Movie) != null)
         {
+            movie = cast (disp, Movie);
+
             // Add this movie to our list if it's not already in a MoviePlayer,{
 
             // and if it's not already managed by another Movie who will be handling its updating.
@@ -87,9 +89,11 @@ class MoviePlayer implements IAnimatable
             return;
         }
 
-        var container:DisplayObjectContainer = (try cast(disp, DisplayObjectContainer) catch (e:Dynamic) null);
-        if (container != null)
+        var container:DisplayObjectContainer;
+        if (Std.is(disp, DisplayObjectContainer))
         {
+            container = cast(disp, DisplayObjectContainer);
+
             var ii:Int = as3hx.Compat.parseInt(container.numChildren - 1);
             while (ii >= 0)
             {
@@ -101,9 +105,10 @@ class MoviePlayer implements IAnimatable
 
     private function removeMovies(disp:DisplayObject):Void
     {
-        var movie:Movie = try cast(disp, Movie) catch (e:Dynamic) null;
-        if (movie != null)
+        var movie:Movie;
+        if (Std.is(disp, Movie))
         {
+            movie = cast(disp, Movie);
             if (movie._playerData != null && movie._playerData.player == this)
             {
                 var node:MoviePlayerNode = movie._playerData;
@@ -137,10 +142,12 @@ class MoviePlayer implements IAnimatable
             return;
         }
 
-        var container:DisplayObjectContainer = (try cast(disp, DisplayObjectContainer) catch (e:Dynamic) null);
-        if (container != null)
+        var container:DisplayObjectContainer;
+        if (Std.is(disp, DisplayObjectContainer) )
         {
-            var ii:Int = as3hx.Compat.parseInt(container.numChildren - 1);
+            container = cast(disp, DisplayObjectContainer);
+
+            var ii:Int = container.numChildren - 1;
             while (ii >= 0)
             {
                 removeMovies(container.getChildAt(ii));

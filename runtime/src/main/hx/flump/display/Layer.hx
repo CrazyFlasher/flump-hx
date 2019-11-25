@@ -56,7 +56,7 @@ class Layer
 
             // If multiple consecutive keyframes refer to the same library item,
             // we reuse that item across those frames.
-            _displays = new Array<DisplayObject>();
+            _displays = [];
             ii = 0;
             while (ii < _keyframes.length)
             {
@@ -80,10 +80,10 @@ class Layer
                     else
                     {
                         display = library.createDisplayObject(kf.ref);
-                        childMovie = (try cast(display, Movie) catch (e:Dynamic) null);
-                        if (childMovie != null)
+
+                        if (Std.is(display, Movie))
                         {
-                            childMovie.setParentMovie(movie);
+                            cast (display, Movie).setParentMovie(movie);
                         }
                     }
                 }
@@ -99,6 +99,11 @@ class Layer
         }
 
         _currentDisplay.name = _name;
+
+        if (Std.is(_currentDisplay, Movie))
+        {
+            _currentMovieDisplay = cast _currentDisplay;
+        }
     }
 
     private function get_numDisplays():Int
@@ -120,6 +125,14 @@ class Layer
             ++ii;
         }
         _currentDisplay = disp;
+
+        if (Std.is(_currentDisplay, Movie))
+        {
+            _currentMovieDisplay = cast _currentDisplay;
+        } else
+        {
+            _currentMovieDisplay = null;
+        }
     }
 
 /** This Layer's name */
@@ -167,12 +180,17 @@ class Layer
             _currentDisplay.name = null;
             _currentDisplay.visible = false;
             // If we're swapping in a Movie, reset its timeline.
-            if (Std.is(disp, Movie))
-            {
-                cast((disp), Movie).addedToLayer();
-            }
             _currentDisplay = disp;
             _currentDisplay.name = _name;
+
+            if (Std.is(_currentDisplay, Movie))
+            {
+                _currentMovieDisplay = cast _currentDisplay;
+                _currentMovieDisplay.addedToLayer();
+            } else
+            {
+                _currentMovieDisplay = null;
+            }
         }
 
         var kf:KeyframeMold = _keyframes[_keyframeIdx];
@@ -266,20 +284,23 @@ class Layer
     private var _movie:Movie; // our parent Movie
     private var _name:String;
     private var _keyframes:Array<KeyframeMold>;
-    private var _numFrames:Int;
+    private var _numFrames:Int = 0;
     // Stores this layer's DisplayObjects indexed by keyframe.
     private var _displays:Array<DisplayObject>;
     // The index of the last keyframe drawn in drawFrame.
-    private var _keyframeIdx:Int;
+    private var _keyframeIdx:Int = 0;
 
     // The current DisplayObject being rendered for this layer
     @:allow(flump.display)
     private var _currentDisplay:DisplayObject;
+    @:allow(flump.display)
+    private var _currentMovieDisplay:Movie;
+
     // If true, the Layer is not being updated by its parent movie. (Managed by Movie)
     @:allow(flump.display)
-    private var _disabled:Bool;
+    private var _disabled:Bool = false;
     // The number of DisplayObjects we're managing
-    private var _numDisplays:Int;
+    private var _numDisplays:Int = 0;
 
     private static var R:Rectangle = new Rectangle();
 }

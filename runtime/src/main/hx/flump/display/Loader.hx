@@ -187,8 +187,7 @@ class Loader
                     {
                         onFailure(err);
                     }
-                    Lib.setTimeout(() -> {_libLoader.delegate.loadAtlasBitmap(atlas, atlasIndex, bytes, unaryOnSuccess, unaryOnFailure);
-                    }, 1000);
+                    _libLoader.delegate.loadAtlasBitmap(atlas, atlasIndex, bytes, unaryOnSuccess, unaryOnFailure);
                 }, 2
             );
             atlasFuture.failed.connect(onBitmapLoadingFailed, 1);
@@ -207,11 +206,6 @@ class Loader
                 bytes.clear();
             }, 1);
         }
-    }
-
-    private function onBitmapLoadingSuccess(bitmapData:BitmapData):Void
-    {
-
     }
 
     private function baseTextureLoaded(baseTexture:Texture, atlas:AtlasMold):Void
@@ -250,7 +244,7 @@ class Loader
 
     private function onBitmapLoadingComplete(_:Array<Dynamic> = null):Void
     {
-        for (movie/* AS3HX WARNING could not determine type for var: movie exp: EField(EIdent(_lib),movies) type: null */ in _lib.movies)
+        for (movie in _lib.movies)
         {
             movie.fillLabels();
             _creators[movie.id] = _libLoader.delegate.createMovieCreator(
@@ -279,7 +273,7 @@ class Loader
     private var _lib:LibraryMold;
 
     private var _baseTextures(default, never):Array<Texture> = [];
-    private var _creators(default, never):Dictionary<String, SymbolCreator> = new Dictionary<String, SymbolCreator>(); //<name, ImageCreator/MovieCreator>
+    private var _creators(default, never):Map<String, SymbolCreator> = new Map<String, SymbolCreator>(); //<name, ImageCreator/MovieCreator>
     private var _atlasBytes(default, never):Dictionary<String, ByteArray> = new Dictionary<String, ByteArray>(); //<String name, ByteArray>
     private var _bitmapLoaders(default, never):Executor = new Executor(1);
 

@@ -7,9 +7,12 @@
 	<source path="src" />
 	<source path="../runtime/src/main/hx" />
 
+	<window hardware="true"/>
+	<window if="html5" fps="0" background="0" color-depth="16"/>
+
 	<haxelib name="openfl" />
 	<haxelib name="starling" />
-<!--	<haxelib name="as3hx" />-->
+	<haxelib name="actuate" />
 
 	<assets path="assets" rename="assets" exclude="*.fla"/>
 	

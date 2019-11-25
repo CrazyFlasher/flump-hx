@@ -15,7 +15,7 @@ class LibraryImpl implements Library
     public var baseScale(get, never):Float;
 
 //    @:allow(flump.display)
-    public function new(baseTextures:Array<Texture>, creators:Dictionary<String, SymbolCreator>,
+    public function new(baseTextures:Array<Texture>, creators:Map<String, SymbolCreator>,
                          isNamespaced:Bool, baseScale:Float = 1)
     {
         _baseTextures = baseTextures;
@@ -59,9 +59,9 @@ class LibraryImpl implements Library
     {
         checkNotDisposed();
         var names:Array<String> = [];
-        for (creatorName in Reflect.fields(_creators))
+        for (creatorName in _creators.keys())
         {
-            if (Std.is(Reflect.field(_creators, creatorName), MovieCreator))
+            if (Std.is(_creators.get(creatorName), MovieCreator))
             {
                 names.push(creatorName);
             }
@@ -73,9 +73,9 @@ class LibraryImpl implements Library
     {
         checkNotDisposed();
         var names:Array<String> = [];
-        for (creatorName in Reflect.fields(_creators))
+        for (creatorName in _creators.keys())
         {
-            if (Std.is(Reflect.field(_creators, creatorName), ImageCreator))
+            if (Std.is(_creators.get(creatorName), ImageCreator))
             {
                 names.push(creatorName);
             }
@@ -117,7 +117,7 @@ class LibraryImpl implements Library
 
     private function requireSymbolCreator(name:String):SymbolCreator
     {
-        var creator:SymbolCreator = Reflect.field(_creators, name);
+        var creator:SymbolCreator = _creators.get(name);
         if (creator == null)
         {
             throw new Error("No such id '" + name + "'");
@@ -133,7 +133,7 @@ class LibraryImpl implements Library
         }
     }
 
-    private var _creators:Dictionary<String, SymbolCreator>;
+    private var _creators:Map<String, SymbolCreator>;
     private var _baseTextures:Array<Texture>;
     private var _isNamespaced:Bool;
     private var _baseScale:Float;

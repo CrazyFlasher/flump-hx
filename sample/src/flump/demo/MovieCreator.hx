@@ -34,11 +34,8 @@ class MovieCreator
     public function createMovie(name : String) : Movie
     {
         var movie : Movie = _library.createMovie(name);
-        movie.addEventListener(Event.ADDED_TO_STAGE, function listener(e : Event) : Void
-                {
-                    e.target.removeEventListener(e.type, listener);
-                    _juggler.add(movie);
-                });
+        _juggler.add(movie);
+
         return movie;
     }
     

@@ -3,11 +3,9 @@
 
 package flump.display;
 
-import openfl.events.ProgressEvent;
-import openfl.utils.ByteArray;
 import flump.executor.Executor;
 import flump.executor.Future;
-import flump.mold.LibraryMold;
+import openfl.utils.ByteArray;
 import react.Signal;
 
 /**

@@ -105,16 +105,17 @@ class Future
     }
     
     @:allow(flump.executor)
-    private function onSuccess(result : Array<Dynamic> = null) : Void
+    private function onSuccess(result : Dynamic = null) : Void
     {
         if (_result != null)
         {
             throw new Error("already completed");
         }
-        if (result.length > 0)
+        /*if (result.length > 0)
         {
             _result = result[0];
-        }
+        }*/
+        _result = result;
         _state = STATE_SUCCEEDED;
         if (_onSuccess != null)
         {

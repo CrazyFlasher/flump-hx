@@ -53,15 +53,15 @@ class Movie extends Sprite implements IAnimatable
         if (src.flipbook)
         {
             _flipbook = true;
-            _layers = new Array<Layer>();
-            _layers[0] = createLayer(this, src.layers[0], library, /*flipbook=*/true);
+            _layers = [];
+            _layers.push(createLayer(this, src.layers[0], library, /*flipbook=*/true));
             _numFrames = src.layers[0].frames;
         }
         else
         {
-            _layers = new Array<Layer>();
+            _layers = [];
             var ii:Int = 0;
-            while (ii < _layers.length)
+            while (ii < src.layers.length)
             {
                 _layers[ii] = createLayer(this, src.layers[ii], library, /*flipbook=*/false);
                 _numFrames = Std.int(Math.max(src.layers[ii].frames, _numFrames));
@@ -279,10 +279,9 @@ class Movie extends Sprite implements IAnimatable
         {
             // Child is no longer managed by this Movie{
 
-            var childMovie:Movie = (try cast(child, Movie) catch (e:Dynamic) null);
-            if (childMovie != null)
+            if (Std.is(child, Movie))
             {
-                childMovie.setParentMovie(null);
+                cast (child, Movie).setParentMovie(null);
             }
 
             if (_layers[childLayerIdx].numDisplays == 1)
@@ -364,10 +363,9 @@ class Movie extends Sprite implements IAnimatable
             {
                 for (layer in _layers)
                 {
-                    var childMovie:Movie = (try cast(layer._currentDisplay, Movie) catch (e:Dynamic) null);
-                    if (childMovie != null)
+                    if (layer._currentMovieDisplay != null)
                     {
-                        childMovie.goToInternal(requestedFrame, recursive);
+                        layer._currentMovieDisplay.goToInternal(requestedFrame, recursive);
                     }
                 }
             }
@@ -467,7 +465,7 @@ class Movie extends Sprite implements IAnimatable
 
             // If _playTime is very close to _duration, rounding error can cause us to
             // land on lastFrame + 1. Protect against that.
-            var newFrame:Int = Math.round(_playTime * _frameRate);
+            var newFrame:Int = Std.int(_playTime * _frameRate);
             if (newFrame < 0)
             {
                 newFrame = 0;
@@ -475,7 +473,7 @@ class Movie extends Sprite implements IAnimatable
             else
             if (newFrame >= _numFrames)
             {
-                newFrame = as3hx.Compat.parseInt(_numFrames - 1);
+                newFrame = _numFrames - 1;
             }
 
             // If the update crosses or goes to the stopFrame:
@@ -484,9 +482,8 @@ class Movie extends Sprite implements IAnimatable
             {
                 // how many frames remain to the stopframe?{
 
-                var framesRemaining:Int =
-                ((_frame <= _stopFrame) ? _stopFrame - _frame : _numFrames - _frame + _stopFrame);
-                var framesElapsed:Int = as3hx.Compat.parseInt(as3hx.Compat.parseInt(actualPlaytime * _frameRate) - _frame);
+                var framesRemaining:Int = ((_frame <= _stopFrame) ? _stopFrame - _frame : _numFrames - _frame + _stopFrame);
+                var framesElapsed:Int = Std.int(actualPlaytime * _frameRate) - _frame;
                 if (framesElapsed >= framesRemaining)
                 {
                     _state = STOPPED;
@@ -498,10 +495,9 @@ class Movie extends Sprite implements IAnimatable
 
         for (layer in _layers)
         {
-            var childMovie:Movie = (try cast(layer._currentDisplay, Movie) catch (e:Dynamic) null);
-            if (childMovie != null)
+            if (layer._currentMovieDisplay != null)
             {
-                childMovie.advanceTime(dt);
+                layer._currentMovieDisplay.advanceTime(dt);
             }
         }
     }
@@ -562,12 +558,12 @@ class Movie extends Sprite implements IAnimatable
     {
         if (Std.is(position, Int))
         {
-            return as3hx.Compat.parseInt(position);
+            return cast position;
         }
         else
         if (Std.is(position, String))
         {
-            var label:String = Std.string(position);
+            var label:String = cast position;
             var frame:Int = getFrameForLabel(label);
             if (frame < 0)
             {
@@ -627,7 +623,7 @@ class Movie extends Sprite implements IAnimatable
         else
         {
             startFrame = ((prevFrame + 1 < _numFrames) ? prevFrame + 1 : 0);
-            frameCount = as3hx.Compat.parseInt(_frame - prevFrame);
+            frameCount = _frame - prevFrame;
             if ((dt >= _duration) || (newFrame < _frame))
             {
                 // we wrapped{
@@ -693,7 +689,8 @@ class Movie extends Sprite implements IAnimatable
     private var _flipbook:Bool;
     private var _isUpdatingFrame:Bool;
     private var _pendingGoToFrame:Int = NO_FRAME;
-    private var _frame:Int = NO_FRAME;private var _stopFrame:Int = NO_FRAME;
+    private var _frame:Int = NO_FRAME;
+    private var _stopFrame:Int = NO_FRAME;
     private var _state:String = PLAYING;
     private var _playTime:Float = 0;
     private var _duration:Float;
