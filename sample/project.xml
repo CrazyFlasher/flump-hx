@@ -8,12 +8,12 @@
 	<source path="../runtime/src" />
 
 	<window hardware="true"/>
-	<window if="html5" fps="0" background="0" color-depth="16"/>
+	<window fps="0" background="0"/>
 
 	<haxelib name="openfl" />
 	<haxelib name="starling" />
 	<haxelib name="actuate" />
 
-	<assets path="assets" rename="assets" exclude="*.fla"/>
+	<assets path="assets" rename="assets"/>
 	
 </project>
