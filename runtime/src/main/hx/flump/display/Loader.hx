@@ -1,55 +1,65 @@
-//
-// Flump - Copyright 2013 Flump Authors
-
 package flump.display;
 
-import openfl.Lib;
-import haxe.io.BytesInput;
+import flump.display.LibraryLoaderDelegateImpl.LibraryLoaderDelegateEvent;
+import flump.display.LibraryLoaderDelegateImpl.LibraryLoaderDelegateEvent;
+import flump.display.LibraryLoaderDelegateImpl.LibraryLoaderDelegateEvent;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
+import openfl.display.BitmapData;
+import flump.mold.AtlasMold;
+import flump.mold.TextureGroupMold;
+import openfl.events.Event;
+import openfl.errors.Error;
+import starling.textures.Texture;
+import openfl.events.EventDispatcher;
 import lime._internal.format.Deflate;
+import flump.mold.LibraryMold;
 import haxe.io.Bytes;
 import haxe.zip.Reader in Zip;
 import haxe.zip.Entry;
-import flump.executor.Executor;
-import flump.executor.Future;
-import flump.executor.FutureTask;
-import flump.mold.AtlasMold;
-import flump.mold.LibraryMold;
-import flump.mold.TextureGroupMold;
-import haxe.Constraints.Function;
-import openfl.display.BitmapData;
-import openfl.errors.Error;
-import openfl.events.Event;
-import openfl.events.IOErrorEvent;
-import openfl.events.ProgressEvent;
-import openfl.geom.Point;
-import openfl.geom.Rectangle;
-import openfl.net.URLRequest;
-import openfl.utils.ByteArray;
-import openfl.utils.Dictionary;
+import haxe.io.BytesInput;
 import starling.core.Starling;
-import starling.textures.Texture;
+import openfl.utils.ByteArray;
 
-class Loader
+class Loader extends EventDispatcher
 {
-//    @:allow(flump.display)
-    public function new(toLoad:Dynamic, libLoader:LibraryLoader)
+    private static inline var PNG:String = ".png";
+
+    public var library(get, never):LibraryImpl;
+
+    private var _baseTextures(default, never):Array<Texture> = [];
+    private var _creators(default, never):Map<String, SymbolCreator> = new Map<String, SymbolCreator>(); //<name, ImageCreator/MovieCreator>
+    private var _atlasBytes(default, never):Map<String, ByteArray> = new Map<String, ByteArray>(); //<String name, ByteArray>
+
+    private var _scaleFactor:Float;
+    private var _scaleTexturesToOrigin:Bool;
+    private var _generateMipMaps:Bool;
+    private var _lib:LibraryMold;
+    private var _versionChecked:Bool;
+    private var _delegate:LibraryLoaderDelegateImpl = new LibraryLoaderDelegateImpl();
+    private var _library:LibraryImpl;
+
+    private var atlas:AtlasMold;
+    private var bytes:ByteArray;
+    private var atlasIndex:Int;
+    private var scale:Float;
+    private var atlasTotalCount:Int;
+    private var atlasLoadedCount:Int;
+
+    public function new(scaleFactor:Float, scaleTexturesToOrigin:Bool, generateMipMaps:Bool)
     {
-        _scaleFactor = ((libLoader.scaleFactor > 0) ? libLoader.scaleFactor : Starling.current.contentScaleFactor);
-        _libLoader = libLoader;
-        _toLoad = toLoad;
+        super();
+
+        _scaleFactor = scaleFactor > 0 ? scaleFactor : Starling.current.contentScaleFactor;
+        _scaleTexturesToOrigin = scaleTexturesToOrigin;
+        _generateMipMaps = generateMipMaps;
+
+        _delegate.addEventListener(LibraryLoaderDelegateEvent.LOADED, atlasLoaded);
+        _delegate.addEventListener(LibraryLoaderDelegateEvent.ERROR, atlasError);
     }
 
-    public function load(future:FutureTask):Void
+    public function loadBytes(bytes:ByteArray):Void
     {
-        _future = future;
-
-//        _zip.addEventListener(Event.COMPLETE, _future.monitoredCallback(onZipLoadingComplete));
-//        _zip.addEventListener(IOErrorEvent.IO_ERROR, _future.fail);
-//        _zip.addEventListener(FZipErrorEvent.PARSE_ERROR, _future.fail);
-//        _zip.addEventListener(FZipEvent.FILE_LOADED, _future.monitoredCallback(onFileLoaded));
-//        _zip.addEventListener(ProgressEvent.PROGRESS, _future.monitoredCallback(onProgress));
-
-        var bytes:ByteArray = _toLoad;
         var input:BytesInput = new BytesInput(bytes);
 
         var zip:Zip = new Zip(input);
@@ -75,45 +85,29 @@ class Loader
         if (name == LibraryLoader.LIBRARY_LOCATION)
         {
             var jsonString:String = data.readUTFBytes(data.length);
-            _lib = LibraryMold.fromJSON(haxe.Json.parse(jsonString), _libLoader.scaleTexturesToOrigin);
-            _libLoader.libraryMoldLoaded.emit(_lib);
-        }
-        else
+            _lib = LibraryMold.fromJSON(haxe.Json.parse(jsonString), _scaleTexturesToOrigin);
+
+            dispatchEvent(new LoaderEvent(LoaderEvent.LIB_LOADED));
+        } else
         if (name.indexOf(PNG, name.length - PNG.length) != -1)
         {
-            _atlasBytes[name] = data;
-        }
-        else
-        if (name.indexOf(ATF, name.length - ATF.length) != -1)
-        {
-            Reflect.setField(_atlasBytes, name, data);
-            _libLoader.atfAtlasLoaded.emit({
-                name : name,
-                bytes : data
-            });
-        }
-        else
+            _atlasBytes.set(name, data);
+        } else
         if (name == LibraryLoader.VERSION_LOCATION)
         {
             var zipVersion:String = data.readUTFBytes(data.length);
             if (zipVersion != LibraryLoader.VERSION)
             {
-                throw new Error("Zip is version " + zipVersion + " but the code needs " +
-                LibraryLoader.VERSION);
+                throw new Error("Zip is version " + zipVersion + " but the code needs " + LibraryLoader.VERSION);
             }
             _versionChecked = true;
-        }
-        else
+        } else
         if (name == LibraryLoader.MD5_LOCATION)
         {
             // Nothing to verify
-        }
-        else
+        } else
         {
-            _libLoader.fileLoaded.emit({
-                name : name,
-                bytes : data
-            });
+            trace("Redundant file in zip: " + name);
         }
     }
 
@@ -127,84 +121,59 @@ class Loader
         {
             throw new Error(LibraryLoader.VERSION_LOCATION + " missing from zip");
         }
-        _bitmapLoaders.terminated.connect(_future.monitoredCallback(onBitmapLoadingComplete), 1);
 
         // Determine the scale factor we want to use
         var textureGroup:TextureGroupMold = _lib.bestTextureGroupForScaleFactor(Std.int(_scaleFactor));
         if (textureGroup != null)
         {
             var ii:Int = 0;
-            while (ii < textureGroup.atlases.length)
+            atlasTotalCount = textureGroup.atlases.length;
+            while (ii < atlasTotalCount)
             {
                 loadAtlas(textureGroup, ii);
                 ++ii;
             }
         }
         // free up extra atlas bytes immediately
-        for (leftover in Reflect.fields(_atlasBytes))
+        for (leftover in _atlasBytes.iterator())
         {
-            if (_atlasBytes.exists(leftover))
-            {
-                cast((Reflect.field(_atlasBytes, leftover)), ByteArray).clear();
-                _atlasBytes.remove(leftover);
-            }
+            leftover.clear();
         }
-        _bitmapLoaders.shutdown();
+        _atlasBytes.clear();
     }
 
-    private function loadAtlas(textureGroup:TextureGroupMold, atlasIndex:Int):Void
+    private function atlasLoaded(e:LibraryLoaderDelegateEvent):Void
     {
-        var atlas:AtlasMold = textureGroup.atlases[atlasIndex];
-        var bytes:ByteArray = _atlasBytes[atlas.file];
+        trace("Atlas loaded: " + atlas.file);
+        var bitmapData:BitmapData = _delegate.bitmapData;
 
-        if (bytes == null)
-        {
-            throw new Error("Expected an atlas '" + atlas.file + "', but it wasn't in the zip");
-        }
+        var tex:Texture = _delegate.createTextureFromBitmap(
+            atlas, bitmapData, scale, _generateMipMaps
+        );
 
-        bytes.position = 0; // reset the read head
-        var scale:Float = atlas.scaleFactor * ((_libLoader.scaleTexturesToOrigin) ? _lib.baseScale : 1);
-        if (_lib.textureFormat == "atf")
-        {
-            // we do not dipose of the ByteArray so that Starling will handle a context loss.{
+        baseTextureLoaded(tex, atlas);
+        // We dispose of the ByteArray, but not the BitmapData,
+        // so that Starling will handle a context loss.
+        bytes.clear();
 
-            baseTextureLoaded(Texture.fromAtfData(bytes, scale, _libLoader.generateMipMaps), atlas);
-        }
-        else
+        atlasLoadedCount++;
+
+        if (atlasLoadedCount == atlasTotalCount)
         {
-            var atlasFuture:Future = _bitmapLoaders.submit(
-                function(onSuccess:Function, onFailure:Function):Void
-                {
-                    // Executor's onSuccess and onFailure are varargs functions, which our
-                    // function may not handle correctly if it changes its behavior based on the
-                    // number of receiving arguments. So we un-vararg-ify them here, which is
-                    // kinda crappy!
-                    var unaryOnSuccess:Function = function(result:Dynamic):Void
-                    {
-                        onSuccess(result);
-                    }
-                    var unaryOnFailure:Function = function(err:Dynamic):Void
-                    {
-                        onFailure(err);
-                    }
-                    _libLoader.delegate.loadAtlasBitmap(atlas, atlasIndex, bytes, unaryOnSuccess, unaryOnFailure);
-                }, 2
-            );
-            atlasFuture.failed.connect(onBitmapLoadingFailed, 1);
-            atlasFuture.succeeded.connect(function (bitmapData:BitmapData):Void
+            _delegate.removeEventListener(LibraryLoaderDelegateEvent.LOADED, atlasLoaded);
+            _delegate.removeEventListener(LibraryLoaderDelegateEvent.ERROR, atlasError);
+
+            for (movie in _lib.movies)
             {
-                _libLoader.pngAtlasLoaded.emit({
-                    atlas : atlas,
-                    image : bitmapData
-                });
-                var tex:Texture = _libLoader.delegate.createTextureFromBitmap(
-                    atlas, bitmapData, scale, _libLoader.generateMipMaps
-                );
-                baseTextureLoaded(tex, atlas);
-                // We dispose of the ByteArray, but not the BitmapData,
-                // so that Starling will handle a context loss.
-                bytes.clear();
-            }, 1);
+                movie.fillLabels();
+                _creators.set(movie.id, _delegate.createMovieCreator(
+                    movie, _lib.frameRate
+                ));
+            }
+
+            _library = new LibraryImpl(_baseTextures, _creators, _lib.isNamespaced, _lib.baseScale);
+
+            dispatchEvent(new LoaderEvent(LoaderEvent.LOADED));
         }
     }
 
@@ -212,8 +181,8 @@ class Loader
     {
         _baseTextures.push(baseTexture);
 
-        _libLoader.delegate.consumingAtlasMold(atlas);
-        var scale:Float = atlas.scaleFactor * ((_libLoader.scaleTexturesToOrigin) ? _lib.baseScale : 1);
+        _delegate.consumingAtlasMold(atlas);
+        var scale:Float = atlas.scaleFactor * ((_scaleTexturesToOrigin) ? _lib.baseScale : 1);
         for (atlasTexture in atlas.textures)
         {
             var bounds:Rectangle = atlasTexture.bounds;
@@ -233,51 +202,56 @@ class Loader
                 offset.y /= scale;
             }
 
-            _creators[atlasTexture.symbol] = _libLoader.delegate.createImageCreator(
+            _creators.set(atlasTexture.symbol, _delegate.createImageCreator(
                 atlasTexture,
                 Texture.fromTexture(baseTexture, bounds),
                 offset,
                 atlasTexture.symbol
-            );
+            ));
         }
     }
 
-    private function onBitmapLoadingComplete(_:Array<Dynamic> = null):Void
+    private function atlasError(e:LibraryLoaderDelegateEvent):Void
     {
-        for (movie in _lib.movies)
-        {
-            movie.fillLabels();
-            _creators[movie.id] = _libLoader.delegate.createMovieCreator(
-                movie, _lib.frameRate
-            );
-        }
-        _future.succeed([new LibraryImpl(_baseTextures, _creators, _lib.isNamespaced, _lib.baseScale)]);
+        trace("Failed to load atlas: " + atlas.file);
+
+        dispatchEvent(new LoaderEvent(LoaderEvent.ERROR));
+
+        _delegate.removeEventListener(LibraryLoaderDelegateEvent.LOADED, atlasLoaded);
+        _delegate.removeEventListener(LibraryLoaderDelegateEvent.ERROR, atlasError);
     }
 
-    private function onBitmapLoadingFailed(e:Dynamic):Void
+    private function loadAtlas(textureGroup:TextureGroupMold, atlasIndex:Int):Void
     {
-        if (_future.isComplete)
+        atlas = textureGroup.atlases[atlasIndex];
+        bytes = _atlasBytes.get(atlas.file);
+        this.atlasIndex = atlasIndex;
+        this.scale = atlas.scaleFactor * ((_scaleTexturesToOrigin) ? _lib.baseScale : 1);
+
+        if (bytes == null)
         {
-            return;
+            throw new Error("Expected an atlas '" + atlas.file + "', but it wasn't in the zip");
         }
-        _future.fail(e);
-        _bitmapLoaders.shutdownNow();
+
+        bytes.position = 0; // reset the read head
+
+        _delegate.loadAtlasBitmap(bytes);
     }
 
-    private var _toLoad:Dynamic;
-    private var _scaleFactor:Float;
-    private var _libLoader:LibraryLoader;
-    private var _future:FutureTask;
-    private var _versionChecked:Bool;
-
-    private var _lib:LibraryMold;
-
-    private var _baseTextures(default, never):Array<Texture> = [];
-    private var _creators(default, never):Map<String, SymbolCreator> = new Map<String, SymbolCreator>(); //<name, ImageCreator/MovieCreator>
-    private var _atlasBytes(default, never):Dictionary<String, ByteArray> = new Dictionary<String, ByteArray>(); //<String name, ByteArray>
-    private var _bitmapLoaders(default, never):Executor = new Executor(1);
-
-    private static inline var PNG:String = ".png";
-    private static inline var ATF:String = ".atf";
+    private function get_library():LibraryImpl
+    {
+        return _library;
+    }
 }
 
+class LoaderEvent extends Event
+{
+    public static inline var LOADED:String = "LoaderEvent.LOADED";
+    public static inline var LIB_LOADED:String = "LoaderEvent.LIB_LOADED";
+    public static inline var ERROR:String = "LoaderEvent.ERROR";
+
+    public function new(type:String)
+    {
+        super(type);
+    }
+}

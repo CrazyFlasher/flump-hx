@@ -3,21 +3,31 @@
 
 package flump.executor.load;
 
-import haxe.Constraints.Function;
 import openfl.display.Bitmap;
-import openfl.display.Loader;
+import openfl.display.BitmapData;
+import openfl.events.Event;
 
 class BitmapLoader extends BaseLoader
 {
-    override private function handleSuccess(onSuccess : Function, loader : Loader) : Void
-    {
-        var bitmap : Bitmap = try cast(loader.content, Bitmap) catch(e:Dynamic) null;
-        onSuccess(bitmap.bitmapData);
-    }
+    public var bitmapData(get, never):BitmapData;
+
+    private var _bitmapData:BitmapData;
 
     public function new()
     {
         super();
+    }
+
+    override private function handleSuccess(e:Event) : Void
+    {
+        _bitmapData = cast (loader.content, Bitmap).bitmapData;
+
+        super.handleSuccess(e);
+    }
+
+    private function get_bitmapData():BitmapData
+    {
+        return _bitmapData;
     }
 }
 

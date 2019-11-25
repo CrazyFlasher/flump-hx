@@ -3,33 +3,36 @@
 
 package flump.demo;
 
-import motion.easing.Linear;
-import motion.Actuate;
-import openfl.Assets;
-import openfl.errors.Error;
-import flump.display.Library;
 import flump.display.LibraryLoader;
 import flump.display.Movie;
-import flump.executor.Future;
+import motion.Actuate;
+import motion.easing.Linear;
+import openfl.Assets;
 import starling.display.Sprite;
 import starling.events.Event;
 
 class DemoScreen extends Sprite
 {
+    private var loader:LibraryLoader;
+
     public function new()
     {
         super();
-        var loader:Future = new LibraryLoader().loadBytes(Assets.getBytes("assets/mascot.zip"));
-        loader.succeeded.connect(onLibraryLoaded, 1);
-        loader.failed.connect(function(e:Error):Void
-        {
-            throw e;
-        }, 1);
+        loader = new LibraryLoader();
+
+        loader.addEventListener(LibraryLoaderEvent.LOADED, onLibraryLoaded);
+        loader.addEventListener(LibraryLoaderEvent.ERROR, onLibraryError);
+        loader.loadBytes(Assets.getBytes("assets/mascot.zip"));
     }
 
-    private function onLibraryLoaded(library:Library):Void
+    private function onLibraryError(e:LibraryLoaderEvent):Void
     {
-        _movieCreator = new MovieCreator(library);
+        trace("onLibraryError");
+    }
+
+    private function onLibraryLoaded(e:LibraryLoaderEvent):Void
+    {
+        _movieCreator = new MovieCreator(loader.library);
         var x:Float = 150;
         var y:Float = 100;
 
