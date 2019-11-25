@@ -10,7 +10,7 @@
   "contributors": [
     "CrazyFlasher"
   ],
-  "classPath": "src",
+  "classPath": "runtime/src",
   "dependencies": {
     "openfl": "8.9.5",
     "starling": "2.5.1",
