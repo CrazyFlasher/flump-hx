@@ -22,7 +22,7 @@ class DemoScreen extends Sprite
 
         loader.addEventListener(LibraryLoaderEvent.LOADED, onLibraryLoaded);
         loader.addEventListener(LibraryLoaderEvent.ERROR, onLibraryError);
-        loader.loadBytes(Assets.getBytes("assets/mascot.zip"));
+        loader.loadBytes(Assets.getBytes("assets/assets.zip"));
     }
 
     private function onLibraryError(e:LibraryLoaderEvent):Void
@@ -37,13 +37,15 @@ class DemoScreen extends Sprite
         var x:Float = 150;
         var y:Float = 100;
 
-        for (i in 0...500)
-        {
-            var movie:Movie = movieCreator.createMovie("walk");
+//        for (i in 0...500)
+//        {
+            var movie:Movie = movieCreator.createMovie("symbol");
+            movie.goTo("symbol_7");
+            movie.stop();
             movie.x = x;
             movie.y = y;
-            movie.scale = 1;
-            animate(movie);
+//            movie.scale = 1;
+//            animate(movie);
             addChild(movie);
 
             x += 100;
@@ -52,7 +54,7 @@ class DemoScreen extends Sprite
                 x = 150;
                 y += 100;
             }
-        }
+//        }
     }
 
     private function animate(movie:Movie):Void

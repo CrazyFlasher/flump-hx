@@ -47,14 +47,14 @@ class MovieMold
 
     public function fillLabels():Void
     {
-        labels = new Array<Array<String>>();
-        if (labels.length == 0)
+        labels = [];
+        if (frames == 0)
         {
             return;
         }
         labels[0] = [];
         labels[0].push(Movie.FIRST_FRAME);
-        if (labels.length > 1)
+        if (frames > 1)
         {
             // If we only have 1 frame, don't overwrite labels[0]{
 
