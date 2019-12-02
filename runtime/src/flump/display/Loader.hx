@@ -1,8 +1,6 @@
 package flump.display;
 
 import flump.display.LibraryLoaderDelegate.LibraryLoaderDelegateEvent;
-import flump.display.LibraryLoaderDelegate.LibraryLoaderDelegateEvent;
-import flump.display.LibraryLoaderDelegate.LibraryLoaderDelegateEvent;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.display.BitmapData;
@@ -39,6 +37,7 @@ class Loader extends EventDispatcher
     private var _delegate:LibraryLoaderDelegate = new LibraryLoaderDelegate();
     private var _library:LibraryImpl;
 
+    private var textureGroup:TextureGroupMold;
     private var atlas:AtlasMold;
     private var bytes:ByteArray;
     private var atlasIndex:Int;
@@ -122,24 +121,13 @@ class Loader extends EventDispatcher
             throw new Error(LibraryLoader.VERSION_LOCATION + " missing from zip");
         }
 
-        // Determine the scale factor we want to use
-        var textureGroup:TextureGroupMold = _lib.bestTextureGroupForScaleFactor(Std.int(_scaleFactor));
+        textureGroup = _lib.bestTextureGroupForScaleFactor(Std.int(_scaleFactor));
         if (textureGroup != null)
         {
-            var ii:Int = 0;
             atlasTotalCount = textureGroup.atlases.length;
-            while (ii < atlasTotalCount)
-            {
-                loadAtlas(textureGroup, ii);
-                ++ii;
-            }
+            atlasIndex = 0;
+            loadAtlas();
         }
-        // free up extra atlas bytes immediately
-        for (leftover in _atlasBytes.iterator())
-        {
-            leftover.clear();
-        }
-        _atlasBytes.clear();
     }
 
     private function atlasLoaded(e:LibraryLoaderDelegateEvent):Void
@@ -173,7 +161,19 @@ class Loader extends EventDispatcher
 
             _library = new LibraryImpl(_baseTextures, _creators, _lib.isNamespaced, _lib.baseScale);
 
+            // free up extra atlas bytes immediately
+            for (leftover in _atlasBytes.iterator())
+            {
+                leftover.clear();
+            }
+            _atlasBytes.clear();
+
             dispatchEvent(new LoaderEvent(LoaderEvent.LOADED));
+        } else
+        {
+            atlasIndex++;
+
+            loadAtlas();
         }
     }
 
@@ -221,11 +221,10 @@ class Loader extends EventDispatcher
         _delegate.removeEventListener(LibraryLoaderDelegateEvent.ERROR, atlasError);
     }
 
-    private function loadAtlas(textureGroup:TextureGroupMold, atlasIndex:Int):Void
+    private function loadAtlas():Void
     {
         atlas = textureGroup.atlases[atlasIndex];
         bytes = _atlasBytes.get(atlas.file);
-        this.atlasIndex = atlasIndex;
         this.scale = atlas.scaleFactor * ((_scaleTexturesToOrigin) ? _lib.baseScale : 1);
 
         if (bytes == null)
