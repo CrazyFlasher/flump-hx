@@ -15,6 +15,7 @@ class Demo extends Sprite
         super();
 
         _starling = new Starling(DemoScreen, stage);
+//        _starling = new Starling(DemoScreen2, stage);
         _starling.start();
 
         _starling.showStatsAt("left", "top", 2.0);

@@ -36,6 +36,7 @@ class Movie extends Sprite implements IAnimatable
     public var frame(get, never):Int;
     public var numFrames(get, never):Int;
     public var isPlaying(get, never):Bool;
+    public var currentLabel(get, never):String;
 
     /** A label fired by all movies when entering their first frame. */
     public static inline var FIRST_FRAME:String = "flump.movie.FIRST_FRAME";
@@ -646,6 +647,7 @@ class Movie extends Sprite implements IAnimatable
             {
                 for (label in _labels[frameIdx])
                 {
+                    _currentLabel = label;
                     dispatchEventWith(MovieEvent.LABEL_PASSED);
 
                     if (_pendingGoToFrame != NO_FRAME)
@@ -682,6 +684,11 @@ class Movie extends Sprite implements IAnimatable
         }
     }
 
+    private function get_currentLabel():String
+    {
+        return _currentLabel;
+    }
+
     private function createLayer(movie:Movie, src:LayerMold, library:Library, flipbook:Bool):Layer
     {
         return new Layer(movie, src, library, flipbook);
@@ -703,6 +710,7 @@ class Movie extends Sprite implements IAnimatable
     @:allow(flump.display)
     private var _playerData:MoviePlayerNode;
     private var _isManagedByParentMovie:Bool;
+    private var _currentLabel:String;
 
     private static var HELPER_POINT:Point = new Point();
     private static var IDENTITY_MATRIX:Matrix = new Matrix();
