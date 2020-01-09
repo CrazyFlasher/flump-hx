@@ -4,8 +4,8 @@
   "license": "MIT",
   "tags": [
   ],
-  "description": "Ported version of Flump",
-  "version": "1.0.1",
+  "description": "Removed overridden getBounds in Movie",
+  "version": "1.0.2",
   "releasenote": "Initial",
   "contributors": [
     "CrazyFlasher"
