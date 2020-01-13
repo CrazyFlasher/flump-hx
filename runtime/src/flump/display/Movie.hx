@@ -508,7 +508,7 @@ class Movie extends Sprite implements IAnimatable
      *
      * Modified from starling.display.DisplayObjectContainer
      */
-    /*override public function getBounds(targetSpace:DisplayObject, resultRect:Rectangle = null):Rectangle
+    override public function getBounds(targetSpace:DisplayObject, resultRect:Rectangle = null):Rectangle
     {
         if (resultRect == null)
         {
@@ -534,7 +534,7 @@ class Movie extends Sprite implements IAnimatable
         }
 
         return resultRect;
-    }*/
+    }
 
 /**
      * @private
