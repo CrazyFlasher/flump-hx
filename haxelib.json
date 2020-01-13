@@ -5,7 +5,7 @@
   "tags": [
   ],
   "description": "Reverted overridden getBounds in Movie",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "releasenote": "Initial",
   "contributors": [
     "CrazyFlasher"
