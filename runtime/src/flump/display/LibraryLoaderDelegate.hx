@@ -62,7 +62,7 @@ class LibraryLoaderDelegate extends EventDispatcher
         return new ImageCreator(texture, origin, symbol);
     }
 
-    public function createMovieCreator(mold:MovieMold, frameRate:Float):MovieCreator
+    public function createMovieCreator(mold:MovieMold, frameRate:Int):MovieCreator
     {
         return new MovieCreator(mold, frameRate);
     }

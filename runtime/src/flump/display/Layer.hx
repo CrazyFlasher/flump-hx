@@ -3,6 +3,8 @@
 
 package flump.display;
 
+import starling.filters.ColorMatrixFilter;
+import openfl.Vector;
 import openfl.geom.Rectangle;
 import flump.mold.KeyframeMold;
 import flump.mold.LayerMold;
@@ -203,7 +205,29 @@ class Layer
             layer.scaleY = kf.scaleY;
             layer.skewX = kf.skewX;
             layer.skewY = kf.skewY;
-            layer.alpha = kf.alpha;
+
+            if (
+                kf.greenMultiplier != 1 ||
+                kf.blueMultiplier != 1 ||
+                kf.blueMultiplier != 1 ||
+                kf.redOffset != 0 ||
+                kf.greenOffset != 0 ||
+                kf.blueOffset != 0 ||
+                kf.alphaOffset != 0
+            )
+            {
+                var matrix:Vector<Float> = new Vector<Float>([
+                    kf.redMultiplier, 0, 0, 0, kf.redOffset, // red
+                    0, kf.greenMultiplier, 0, 0, kf.greenOffset, // green
+                    0, 0, kf.blueMultiplier, 0, kf.blueOffset, //blue
+                    0, 0, 0, kf.alpha, kf.alphaOffset//alpha
+                ]);
+
+                layer.filter = new ColorMatrixFilter(matrix);
+            } else
+            {
+                layer.alpha = kf.alpha;
+            }
         }
         else
         {
@@ -235,7 +259,28 @@ class Layer
             layer.scaleY = kf.scaleY + (nextKf.scaleY - kf.scaleY) * interped;
             layer.skewX = kf.skewX + (nextKf.skewX - kf.skewX) * interped;
             layer.skewY = kf.skewY + (nextKf.skewY - kf.skewY) * interped;
-            layer.alpha = kf.alpha + (nextKf.alpha - kf.alpha) * interped;
+
+            if (layer.filter != null && Std.is(layer.filter, ColorMatrixFilter))
+            {
+                var redM:Float = kf.redMultiplier + (nextKf.redMultiplier - kf.redMultiplier) * interped;
+                var redO:Float = kf.redOffset + (nextKf.redOffset - kf.redOffset) * interped;
+                var greenM:Float = kf.greenMultiplier + (nextKf.greenMultiplier - kf.greenMultiplier) * interped;
+                var greenO:Float = kf.greenOffset + (nextKf.greenOffset - kf.greenOffset) * interped;
+                var blueM:Float = kf.blueMultiplier + (nextKf.blueMultiplier - kf.blueMultiplier) * interped;
+                var blueO:Float = kf.blueOffset + (nextKf.blueOffset - kf.blueOffset) * interped;
+                var aM:Float = kf.alpha + (nextKf.alpha - kf.alpha) * interped;
+                var aO:Float = kf.alphaOffset + (nextKf.alphaOffset - kf.alphaOffset) * interped;
+
+                cast (layer.filter, ColorMatrixFilter).matrix = new Vector<Float>([
+                    redM, 0, 0, 0, redO, // red
+                    0, greenM, 0, 0, greenO, // green
+                    0, 0, blueM, 0, blueO, //blue
+                    0, 0, 0, aM, aO//alpha
+                ]);
+            } else
+            {
+                layer.alpha = kf.alpha + (nextKf.alpha - kf.alpha) * interped;
+            }
         }
         layer.pivotX = kf.pivotX;
         layer.pivotY = kf.pivotY;

@@ -8,7 +8,7 @@ package flump.mold;
 class LibraryMold
 {
     // The frame rate of movies in this library
-    public var frameRate:Float;
+    public var frameRate:Int;
 
     // The MD5 of the published library SWF
     public var md5:String;

@@ -33,7 +33,15 @@ class KeyframeMold
     /** Transformation point */
     public var pivotX:Float = 0.0;public var pivotY:Float = 0.0;
 
+    /**alpha multiplier**/
     public var alpha:Float = 1;
+    public var redMultiplier:Float = 1;
+    public var blueMultiplier:Float = 1;
+    public var greenMultiplier:Float = 1;
+    public var alphaOffset:Float = 0;
+    public var redOffset:Float = 0;
+    public var blueOffset:Float = 0;
+    public var greenOffset:Float = 0;
 
     public var visible:Bool = true;
 
@@ -53,7 +61,16 @@ class KeyframeMold
         extractFields(o, mold, "scale", "scaleX", "scaleY");
         extractFields(o, mold, "skew", "skewX", "skewY");
         extractFields(o, mold, "pivot", "pivotX", "pivotY");
+
         extractField(o, mold, "alpha");
+        extractField(o, mold, "alphaOffset");
+        extractField(o, mold, "redOffset");
+        extractField(o, mold, "greenOffset");
+        extractField(o, mold, "blueOffset");
+        extractField(o, mold, "redMultiplier");
+        extractField(o, mold, "greenMultiplier");
+        extractField(o, mold, "blueMultiplier");
+
         extractField(o, mold, "visible");
         extractField(o, mold, "ease");
         extractField(o, mold, "tweened");

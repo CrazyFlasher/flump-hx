@@ -33,6 +33,7 @@ import starling.events.Event;
 class Movie extends Sprite implements IAnimatable
 {
     public var isManagedByParentMovie(get, never):Bool;
+    public var frameRate(get, set):Int;
     public var frame(get, never):Int;
     public var numFrames(get, never):Int;
     public var isPlaying(get, never):Bool;
@@ -45,7 +46,7 @@ class Movie extends Sprite implements IAnimatable
     public static inline var LAST_FRAME:String = "flump.movie.LAST_FRAME";
 
     /** @private */
-    public function new(src:MovieMold, frameRate:Float, library:Library)
+    public function new(src:MovieMold, frameRate:Int, library:Library)
     {
         super();
         this.name = src.id;
@@ -503,6 +504,38 @@ class Movie extends Sprite implements IAnimatable
         }
     }
 
+    var _overrideSetX:Float -> Float;
+    public function overrideSetX(value:Float -> Float):Void
+    {
+        _overrideSetX = value;
+    }
+
+    var _overrideSetY:Float -> Float;
+    public function overrideSetY(value:Float -> Float):Void
+    {
+        _overrideSetY = value;
+    }
+
+    override private function set_x(value:Float):Float
+    {
+        if (_overrideSetX == null)
+        {
+            return super.set_x(value);
+        }
+
+        return _overrideSetX(value);
+    }
+
+    override private function set_y(value:Float):Float
+    {
+        if (_overrideSetY == null)
+        {
+            return super.set_y(value);
+        }
+
+        return _overrideSetY(value);
+    }
+
 /**
      * @public
      *
@@ -704,7 +737,7 @@ class Movie extends Sprite implements IAnimatable
     private var _duration:Float;
     private var _layers:Array<Layer>;
     private var _numFrames:Int;
-    private var _frameRate:Float;
+    private var _frameRate:Int;
     private var _labels:Array<Array<String>>;
     private var _skipAdvanceTime:Bool = false;
     @:allow(flump.display)
@@ -720,6 +753,22 @@ class Movie extends Sprite implements IAnimatable
     private static inline var STOPPED:String = "STOPPED";
     private static inline var PLAYING_CHILDREN_ONLY:String = "PLAYING_CHILDREN_ONLY";
     private static inline var PLAYING:String = "PLAYING";
+
+    private function get_frameRate():Int
+    {
+        return _frameRate;
+    }
+
+    private function set_frameRate(value:Int):Int
+    {
+        _frameRate = value;
+
+        _duration = _numFrames / _frameRate;
+
+        updateFrame(0, 0);
+
+        return value;
+    }
 }
 
 class MovieEvent extends Event

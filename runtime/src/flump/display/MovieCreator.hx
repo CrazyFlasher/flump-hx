@@ -6,9 +6,9 @@ import starling.display.DisplayObject;
 class MovieCreator implements SymbolCreator
 {
     public var mold:MovieMold;
-    public var frameRate:Float;
+    public var frameRate:Int;
 
-    public function new(mold:MovieMold, frameRate:Float)
+    public function new(mold:MovieMold, frameRate:Int)
     {
         this.mold = mold;
         this.frameRate = frameRate;
