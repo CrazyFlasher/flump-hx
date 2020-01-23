@@ -4,9 +4,9 @@
   "license": "MIT",
   "tags": [
   ],
-  "description": "Reverted overridden getBounds in Movie",
-  "version": "1.0.4",
-  "releasenote": "Initial",
+  "description": "Ported version of Flump",
+  "version": "1.0.5",
+  "releasenote": "Color transform support",
   "contributors": [
     "CrazyFlasher"
   ],
