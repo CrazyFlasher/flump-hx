@@ -20,6 +20,9 @@ class Layer
 {
     public var numDisplays(get, never):Int;
     public var name(get, never):String;
+    public var maskId(get, never):String;
+
+    private var _maskId:String;
 
     @:allow(flump.display)
     private function new(movie:Movie, src:LayerMold, library:Library, flipbook:Bool)
@@ -27,6 +30,7 @@ class Layer
         _movie = movie;
 
         _keyframes = src.keyframes;
+        _maskId = src.mask;
 
         var childMovie:Movie;
         var display:DisplayObject;
@@ -105,6 +109,15 @@ class Layer
         if (Std.is(_currentDisplay, Movie))
         {
             _currentMovieDisplay = cast _currentDisplay;
+        }
+    }
+
+    @:allow(flump.display)
+    public function applyMask(mask:DisplayObject):Void
+    {
+        for (display in _displays)
+        {
+            display.mask = mask;
         }
     }
 
@@ -348,5 +361,10 @@ class Layer
     private var _numDisplays:Int = 0;
 
     private static var R:Rectangle = new Rectangle();
+
+    private function get_maskId():String
+    {
+        return _maskId;
+    }
 }
 

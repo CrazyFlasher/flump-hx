@@ -3,13 +3,11 @@
 
 package flump.display;
 
-import openfl.geom.Rectangle;
-import starling.utils.MatrixUtil;
 import flump.mold.LayerMold;
-import openfl.geom.Matrix;
-import openfl.geom.Point;
 import flump.mold.MovieMold;
 import openfl.errors.Error;
+import openfl.geom.Matrix;
+import openfl.geom.Point;
 import starling.animation.IAnimatable;
 import starling.display.DisplayObject;
 import starling.display.Sprite;
@@ -70,11 +68,25 @@ class Movie extends Sprite implements IAnimatable
                 ii++;
             }
         }
+
+        createMasks();
+
         _duration = _numFrames / _frameRate;
 
         updateFrame(0, 0);
 
         addEventListener(Event.REMOVED_FROM_STAGE, onRemovedFromStage);
+    }
+
+    private function createMasks():Void
+    {
+        for (layer in _layers)
+        {
+            if (layer.maskId != null)
+            {
+                layer.applyMask(getChildByName(layer.maskId));
+            }
+        }
     }
 
     /** Called when our REMOVED_FROM_STAGE event is fired. */
@@ -505,12 +517,14 @@ class Movie extends Sprite implements IAnimatable
     }
 
     var _overrideSetX:Float -> Float;
+
     public function overrideSetX(value:Float -> Float):Void
     {
         _overrideSetX = value;
     }
 
     var _overrideSetY:Float -> Float;
+
     public function overrideSetY(value:Float -> Float):Void
     {
         _overrideSetY = value;

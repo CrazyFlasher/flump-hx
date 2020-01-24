@@ -5,8 +5,8 @@
   "tags": [
   ],
   "description": "Ported version of Flump",
-  "version": "1.0.5",
-  "releasenote": "Color transform support",
+  "version": "1.0.6",
+  "releasenote": "Added rectangle masks support",
   "contributors": [
     "CrazyFlasher"
   ],

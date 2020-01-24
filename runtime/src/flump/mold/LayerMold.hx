@@ -10,6 +10,8 @@ class LayerMold
     public var frames(get, never):Int;
 
     public var name:String;
+    public var mask:String;
+    public var isMask:Bool;
     public var keyframes:Array<KeyframeMold> = [];
     public var flipbook:Bool;
     public var baseScale:Float;
@@ -25,6 +27,8 @@ class LayerMold
             mold.keyframes.push(KeyframeMold.fromJSON(kf));
         }
         mold.flipbook = Reflect.hasField(o, "flipbook");
+        mold.isMask = Reflect.hasField(o, "isMask");
+        mold.mask = o.mask != null ? o.mask : null;
         return mold;
     }
 
