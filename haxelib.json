@@ -5,8 +5,8 @@
   "tags": [
   ],
   "description": "Ported version of Flump",
-  "version": "1.0.6",
-  "releasenote": "Added rectangle masks support",
+  "version": "1.0.7",
+  "releasenote": "Added possibility to export JPG atlases by adding $jpg to library linkage",
   "contributors": [
     "CrazyFlasher"
   ],

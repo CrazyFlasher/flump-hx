@@ -22,6 +22,7 @@ import openfl.utils.ByteArray;
 class Loader extends EventDispatcher
 {
     private static inline var PNG:String = ".png";
+    private static inline var JPG:String = ".jpg";
 
     public var library(get, never):LibraryImpl;
 
@@ -88,7 +89,7 @@ class Loader extends EventDispatcher
 
             dispatchEvent(new LoaderEvent(LoaderEvent.LIB_LOADED));
         } else
-        if (name.indexOf(PNG, name.length - PNG.length) != -1)
+        if (name.indexOf(PNG, name.length - PNG.length) != -1 || name.indexOf(JPG, name.length - JPG.length) != -1)
         {
             _atlasBytes.set(name, data);
         } else
