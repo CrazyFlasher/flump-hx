@@ -398,11 +398,11 @@ class Movie extends Sprite implements IAnimatable
     * @throws Error if position isn't an int or String, or if it is a String and that String isn't
     * a label on this movie.
     */
-    public function playTo(position:Dynamic):Movie
+    public function playTo(position:Dynamic, playUnlessStopFrame:Bool = true):Movie
         // won't play if we're already at the stop position
     {
 
-        return stopAt(position).play();
+        return stopAt(position).play(playUnlessStopFrame);
     }
 
     /**
@@ -427,11 +427,11 @@ class Movie extends Sprite implements IAnimatable
      *
      * @return this movie for chaining
      */
-    public function play():Movie
-        // set playing to true unless movie is at the stop frame
+    public function play(playUnlessStopFrame:Bool = true):Movie
+        // set playing to true unless movie is at the stop frame or playUnlessStopFrame is set to false
     {
 
-        _state = ((_frame != _stopFrame) ? PLAYING : STOPPED);
+        _state = ((_frame != _stopFrame || !playUnlessStopFrame) ? PLAYING : STOPPED);
         return this;
     }
 

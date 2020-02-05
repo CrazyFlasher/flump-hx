@@ -5,8 +5,8 @@
   "tags": [
   ],
   "description": "Ported version of Flump",
-  "version": "1.0.7",
-  "releasenote": "Added possibility to export JPG atlases by adding $jpg to library linkage",
+  "version": "1.0.8",
+  "releasenote": "Added optional playUnlessStopFrame arg for Movie play method",
   "contributors": [
     "CrazyFlasher"
   ],
