@@ -63,7 +63,7 @@ class MoviePlayer implements IAnimatable
     private function addMovies(disp:DisplayObject):Void
     {
         var movie:Movie;
-        if (Std.is(disp, Movie) != null)
+        if (Std.is(disp, Movie))
         {
             movie = cast (disp, Movie);
 
