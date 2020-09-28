@@ -115,8 +115,8 @@ class KeyframeMold
         {
             return;
         }
-        Reflect.setField(destObj, dest1, Reflect.field(extracted, Std.string(0)));
-        Reflect.setField(destObj, dest2, Reflect.field(extracted, Std.string(1)));
+        Reflect.setField(destObj, dest1, extracted[0]);
+        Reflect.setField(destObj, dest2, extracted[1]);
     }
 
     private static function extractField(o:Dynamic, destObj:Dynamic, field:String):Void
