@@ -127,6 +127,7 @@ class Loader extends EventDispatcher
         {
             atlasTotalCount = textureGroup.atlases.length;
             atlasIndex = 0;
+            atlasLoadedCount = 0;
             loadAtlas();
         }
     }
