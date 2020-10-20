@@ -743,22 +743,22 @@ class Movie extends Sprite implements IAnimatable
         return new Layer(movie, src, library, flipbook);
     }
 
-    private var _flipbook:Bool;
-    private var _isUpdatingFrame:Bool;
+    private var _flipbook:Bool = false;
+    private var _isUpdatingFrame:Bool = false;
     private var _pendingGoToFrame:Int = NO_FRAME;
     private var _frame:Int = NO_FRAME;
     private var _stopFrame:Int = NO_FRAME;
     private var _state:String = PLAYING;
     private var _playTime:Float = 0;
-    private var _duration:Float;
+    private var _duration:Float = 0;
     private var _layers:Array<Layer>;
-    private var _numFrames:Int;
-    private var _frameRate:Int;
+    private var _numFrames:Int = 0;
+    private var _frameRate:Int = 0;
     private var _labels:Array<Array<String>>;
     private var _skipAdvanceTime:Bool = false;
     @:allow(flump.display)
     private var _playerData:MoviePlayerNode;
-    private var _isManagedByParentMovie:Bool;
+    private var _isManagedByParentMovie:Bool = false;
     private var _currentLabel:String;
 
     private static var HELPER_POINT:Point = new Point();
